@@ -1,0 +1,41 @@
+// Plant growth control
+
+#include <Servo.h>    // servo library to run servo
+Servo servo;          // servo is our Servo [making object servo]
+
+int LDR = A5;         // LDR pin in Ardiuno UNO
+int Soil = A0;        // Soil_moisture sensor pin in Ardiuno UNO
+int Servopin = 7;     // Servo pin in Ardiuno UNO
+int LED = 5;          // LED pin in Ardiuno UNO
+
+int motor = 1;        // the servo motor position i 1 for 180 degree and 2 for 0
+
+void setup() {
+  servo.attach(Servopin);       //where servo motor position is
+  pinMode(LED,OUTPUT);          //where LED pin is and to show it is output voltage source
+}
+
+
+void loop() {
+  int Soilmoisture = analogRead(Soil);     // the amount of voltage source is read and convert to the range [0,1023]
+  if (Soilmoisture < 500 && motor == 1){   // if soil moisture is less and the motor valve is closed
+    servo.write(0);                        //turn on servo motor on (rotate the servo motor to 0 degree)
+    delay(30);                             //delay 30 mili second
+    motor = 2;                             // the water valve is on
+  }
+  if (Soilmoisture >= 600 && motor == 2){   //if soil moisture is more and the motor valve is opened
+    servo.write(180);
+    delay(30);
+    motor=1;
+  }
+
+  int Light_intensity = analogRead(LDR);      // read the analog voltage from the LDR
+  int Light_value = map(Light_intensity, 205, 1023, 0, 255); // to map the value from [205, 1023] to [0, 255]
+  
+  if (Light_value < 120){     // if the light value is less then 120 turn of the LED off 
+    digitalWrite(LED, LOW);
+  }else{
+    digitalWrite(LED, Light_value);// else make the value to Light value. {you can use the value from 0 to 255} 
+  }
+ 
+}
